@@ -1,5 +1,7 @@
 ﻿Param(
+  [Parameter(Mandatory=$true)]
   [string]$ParentID,
+  [Parameter(Mandatory=$true)]
   [string]$ProjectName
 )
 
@@ -10,6 +12,11 @@ function Expand-Zip($file, $destination) {
     {
         $shell.Namespace($destination).copyhere($item)
     }
+}
+
+function Replace-Variables($text) {
+    $result = $text.Replace("%PARENT_ID%",$ParentID).Replace("%PROJECT_NAME%",$ProjectName).Replace("%GUID()%",[Guid]::NewGuid())
+    $result
 }
 
 $source = "http://builds.particular.net/guestAuth/app/rest/builds/buildType:Tooling_BuildProcess_StandardNuGet,branch:master,status:SUCCESS/artifacts/content/template.zip"
@@ -31,9 +38,9 @@ mkdir "Template"
 $destination = Resolve-Path ".\Template"
 Expand-Zip -file ($template_archive.Path) -destination ($destination.Path)
 Get-ChildItem -Path ".\Template" -Recurse -File | ForEach-Object { 
-    $new_name = $_.FullName.Replace("%PARENT_ID%",$ParentID).Replace("%PROJECT_NAME%",$ProjectName)
+    $new_name = Replace-Variables $_.FullName
     Rename-Item $_.FullName $new_name
-    (Get-Content $new_name).Replace("%PARENT_ID%",$ParentID).Replace("%PROJECT_NAME%",$ProjectName) | Set-Content $new_name
+    Replace-Variables (Get-Content $new_name) | Set-Content $new_name
 }
 Get-ChildItem -Path ".\Template" | ForEach-Object { 
     Copy-Item $_.FullName $full_project_path -Recurse -Force 
