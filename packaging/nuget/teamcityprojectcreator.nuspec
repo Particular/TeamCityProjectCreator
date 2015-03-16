@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>TeamCityProjectCreator</id>
+    <title>Creates TeamCity projects</title>
+    <version>$version$</version>
+    <authors>NServiceBus Ltd</authors>
+    <owners>Particular et al</owners>
+    <projectUrl>https://github.com/Particular/GitHubReleaseNotes</projectUrl>
+    <description>Create TeamCity projects</description>
+    <tags>github release nptes</tags>
+  </metadata>
+  <files>
+    <file src="..\..\src\TeamCityProjectCreator\bin\release\*.ps1" target="tools" />
+  </files>
+</package>
