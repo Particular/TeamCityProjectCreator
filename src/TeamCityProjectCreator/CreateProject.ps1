@@ -29,7 +29,7 @@ function Normalize-ProjectName($project_name) {
     $result
 }
 
-$pass = $env:TC_PASSWORD
+$pass = (Get-Childitem env:TC_PASSWORD).Value
 if ($pass -eq $null) {
 	throw "TeamCity password for user Tooling need to be specified in environment variable TC_PASSWORD."
 }
