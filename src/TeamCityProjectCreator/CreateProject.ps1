@@ -5,6 +5,10 @@
   [string]$ProjectName
 )
 
+$project_folder = "C:\ProgramData\JetBrains\TeamCity\config\projects"
+$user = "tooling"
+$template_url = "https://builds.particular.net/httpAuth/app/rest/builds/buildType:Tooling_BuildProcess_StandardNuGet,branch:master,status:SUCCESS/artifacts/content/template.zip"
+
 function Expand-Zip($file, $destination) {
     $shell = new-object -com shell.application
     $zip = $shell.NameSpace($file)
@@ -25,8 +29,16 @@ function Normalize-ProjectName($project_name) {
     $result
 }
 
-$source = "http://builds.particular.net/guestAuth/app/rest/builds/buildType:Tooling_BuildProcess_StandardNuGet,branch:master,status:SUCCESS/artifacts/content/template.zip"
-$project_folder = "C:\ProgramData\JetBrains\TeamCity\config\projects"
+$pass = $env:TC_PASSWORD
+$pair = "$($user):$($pass)"
+$encoded_creds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+$basic_auth_value = "Basic $encoded_creds"
+
+$headers = @{
+   Authorization = $basic_auth_value
+}
+
+Invoke-WebRequest -Uri $template_url -OutFile "templateok.zip" -Headers $headers
 
 $normalized_project_name = Normalize-ProjectName $ProjectName
 $full_project_name = "${ParentID}_${normalized_project_name}"
