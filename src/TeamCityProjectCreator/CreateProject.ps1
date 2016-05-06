@@ -29,6 +29,14 @@ function Normalize-ProjectName($project_name) {
     $result
 }
 
+$normalized_project_name = Normalize-ProjectName $ProjectName
+$full_project_name = "${ParentID}_${normalized_project_name}"
+$full_project_path = Join-Path $project_folder $full_project_name
+if (Test-Path $full_project_path) {
+    throw "Project with specified ID already exists"
+}
+mkdir $full_project_path
+
 $pass = (Get-Childitem env:TC_PASSWORD).Value
 if ($pass -eq $null) {
 	throw "TeamCity password for user Tooling need to be specified in environment variable TC_PASSWORD."
@@ -41,18 +49,8 @@ $basic_auth_value = "Basic $encoded_creds"
 $headers = @{
    Authorization = $basic_auth_value
 }
-
 Invoke-WebRequest -Uri $template_url -OutFile "template.zip" -Headers $headers
 
-$normalized_project_name = Normalize-ProjectName $ProjectName
-$full_project_name = "${ParentID}_${normalized_project_name}"
-$full_project_path = Join-Path $project_folder $full_project_name
-if (Test-Path $full_project_path) {
-    throw "Project with specified ID already exists"
-}
-mkdir $full_project_path
-
-Invoke-WebRequest $source -OutFile "template.zip"
 $template_archive = resolve-path ".\template.zip"
 if (Test-Path  ".\Template") {
     rmdir ".\Template" -Recurse -Force
