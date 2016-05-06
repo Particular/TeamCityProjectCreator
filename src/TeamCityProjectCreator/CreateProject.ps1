@@ -20,7 +20,9 @@ function Expand-Zip($file, $destination) {
 
 function Replace-Variables($text) {
     $normalized_project_name = Normalize-ProjectName $ProjectName
-    $result = $text.Replace("%PARENT_ID%",$ParentID).Replace("%PROJECT_NAME%",$normalized_project_name).Replace("%GUID()%",[Guid]::NewGuid())
+	$project_id = "${ParentID}_${normalized_project_name}"
+	$full_project_name = $project_id.Replace("_",".")
+    $result = $text.Replace("%PARENT_ID%",$ParentID).Replace("%PROJECT_NAME%",$full_project_name).Replace("%PROJECT_ID%",$project_id).Replace("%GUID()%",[Guid]::NewGuid())
     $result
 }
 
@@ -30,10 +32,10 @@ function Normalize-ProjectName($project_name) {
 }
 
 $normalized_project_name = Normalize-ProjectName $ProjectName
-$full_project_name = "${ParentID}_${normalized_project_name}"
-$full_project_path = Join-Path $project_folder $full_project_name
+$project_id = "${ParentID}_${normalized_project_name}"
+$full_project_path = Join-Path $project_folder $project_id
 if (Test-Path $full_project_path) {
-    throw "Project with specified ID already exists"
+    throw "Project with ID $full_project_path already exists"
 }
 mkdir $full_project_path
 
