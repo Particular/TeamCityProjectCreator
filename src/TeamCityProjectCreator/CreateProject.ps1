@@ -35,7 +35,7 @@ $normalized_project_name = Normalize-ProjectName $ProjectName
 $project_id = "${ParentID}_${normalized_project_name}"
 $full_project_path = Join-Path $project_folder $project_id
 if (Test-Path $full_project_path) {
-    throw "Project with ID $full_project_path already exists"
+    throw "Project with ID $project_id already exists"
 }
 mkdir $full_project_path
 
