@@ -30,6 +30,10 @@ function Normalize-ProjectName($project_name) {
 }
 
 $pass = $env:TC_PASSWORD
+if ($pass -eq $null) {
+	throw "TeamCity password for user Tooling need to be specified in environment variable TC_PASSWORD."
+}
+
 $pair = "$($user):$($pass)"
 $encoded_creds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
 $basic_auth_value = "Basic $encoded_creds"
@@ -38,7 +42,7 @@ $headers = @{
    Authorization = $basic_auth_value
 }
 
-Invoke-WebRequest -Uri $template_url -OutFile "templateok.zip" -Headers $headers
+Invoke-WebRequest -Uri $template_url -OutFile "template.zip" -Headers $headers
 
 $normalized_project_name = Normalize-ProjectName $ProjectName
 $full_project_name = "${ParentID}_${normalized_project_name}"
